@@ -3,174 +3,153 @@
   <head>
     <meta charset="UTF-8" />
     <title>Image Classification</title>
-    <!-- Import Roboto font from Google Fonts -->
     <link
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-      /* Base styles */
-      body {
-        font-family: "Roboto", sans-serif;
-        background-color: #121212;
-        color: #e0e0e0;
-        margin: 0;
-        padding: 0;
+      .markdown-content h3 {
+        color: #bb86fc;
+        margin-top: 15px;
+        margin-bottom: 10px;
       }
-
-      /* Container for content */
-      .container {
-        max-width: 600px;
+      .markdown-content ul,
+      .markdown-content ol {
+        padding-left: 20px;
+      }
+      .markdown-content blockquote {
+        border-left: 3px solid #bb86fc;
+        padding-left: 10px;
+        margin-left: 0;
+        color: #aaa;
+      }
+      .markdown-content p {
+        margin-bottom: 10px;
+      }
+      .markdown-content strong {
+        color: #bb86fc;
+      }
+    </style>
+  </head>
+  <body
+    style="
+      font-family: 'Roboto', sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      margin: 0;
+      padding: 0;
+    "
+  >
+    <!-- Main container with two blocks side by side -->
+    <div
+      style="
+        max-width: 1300px;
         margin: 40px auto;
         padding: 20px;
         background-color: #1e1e1e;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         border-radius: 10px;
-      }
-
-      /* Heading */
-      h1 {
-        text-align: center;
-        font-weight: 500;
-        margin-bottom: 20px;
-      }
-
-      /* Form layout */
-      form {
         display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        margin: 20px 0;
-      }
-
-      /* Custom file input styling */
-      .file-input-wrapper {
-        position: relative;
-        display: inline-flex;
-        align-items: center;
-      }
-
-      input[type="file"] {
-        opacity: 0;
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        cursor: pointer;
-      }
-
-      .file-label {
-        background-color: #bb86fc;
-        color: #121212;
-        padding: 10px 20px;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-        font-weight: 500;
-      }
-
-      .file-label:hover {
-        background-color: #d0b3ff; /* Lighter purple on hover */
-      }
-
-      #file-name {
-        margin-left: 10px;
-        color: #e0e0e0;
-        font-size: 0.9em;
-      }
-
-      /* Submit button styling */
-      input[type="submit"] {
-        background-color: #bb86fc;
-        color: #121212;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-      }
-
-      input[type="submit"]:hover {
-        background-color: #d0b3ff; /* Lighter purple on hover */
-      }
-
-      /* Focus styles for accessibility */
-      input[type="file"]:focus + .file-label,
-      input[type="submit"]:focus {
-        outline: 2px solid #bb86fc;
-      }
-
-      /* Result section with fade-in effect */
-      #result {
-        opacity: 0;
-        transition: opacity 0.5s ease-in;
-      }
-
-      #result.show {
-        opacity: 1;
-      }
-
-      #result p {
-        margin: 10px 0;
-      }
-
-      #result img {
-        max-width: 100%;
-        height: auto;
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-      }
-
-      /* Highlight prediction and error */
-      .prediction {
-        color: #bb86fc;
-        font-weight: bold;
-      }
-
-      .error {
-        color: #cf6679;
-      }
-
-      /* Responsive design */
-      @media (max-width: 600px) {
-        form {
-          flex-direction: column;
-        }
-        .file-input-wrapper {
-          width: 100%;
-          justify-content: center;
-        }
-        #file-name {
-          margin-left: 0;
-          margin-top: 5px;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <!-- Wrap content in a container -->
-    <div class="container">
-      <h1>Upload an Image for Classification</h1>
-      <form
-        id="uploadForm"
-        action="/upload"
-        method="post"
-        enctype="multipart/form-data"
-      >
-        <div class="file-input-wrapper">
+        flex-wrap: wrap;
+      "
+    >
+      <!-- Left Block: Upload form & Prediction Result -->
+      <div style="flex: 1; min-width: 300px; padding: 10px">
+        <h1 style="text-align: center; font-weight: 500; margin-bottom: 20px">
+          Upload an Image for Classification
+        </h1>
+        <form
+          id="uploadForm"
+          action="/upload"
+          method="post"
+          enctype="multipart/form-data"
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+          "
+        >
+          <div
+            style="
+              position: relative;
+              display: inline-flex;
+              align-items: center;
+            "
+          >
+            <input
+              type="file"
+              id="imageInput"
+              name="image"
+              accept="image/*"
+              required
+              style="
+                opacity: 0;
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                cursor: pointer;
+              "
+            />
+            <label
+              for="imageInput"
+              style="
+                background-color: #bb86fc;
+                color: #121212;
+                padding: 10px 20px;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.3s;
+                font-weight: 500;
+              "
+            >
+              Choose File
+            </label>
+            <span
+              id="file-name"
+              style="margin-left: 10px; color: #e0e0e0; font-size: 0.9em"
+              >No file chosen</span
+            >
+          </div>
           <input
-            type="file"
-            id="imageInput"
-            name="image"
-            accept="image/*"
-            required
+            type="submit"
+            value="Upload"
+            style="
+              background-color: #bb86fc;
+              color: #121212;
+              padding: 10px 20px;
+              border: none;
+              border-radius: 5px;
+              cursor: pointer;
+              transition: background-color 0.3s;
+            "
           />
-          <label for="imageInput" class="file-label">Choose File</label>
-          <span id="file-name">No file chosen</span>
-        </div>
-        <input type="submit" value="Upload" />
-      </form>
-      <div id="result"></div>
+        </form>
+        <div
+          id="result"
+          style="opacity: 0; transition: opacity 0.5s ease-in"
+        ></div>
+      </div>
+
+      <!-- Right Block: Precautionary Measures -->
+      <div
+        style="
+          flex: 1;
+          min-width: 300px;
+          padding: 10px;
+          border-left: 1px solid #333;
+        "
+      >
+        <h1 style="text-align: center; font-weight: 500; margin-bottom: 20px">
+          Precautionary Measures
+        </h1>
+        <div
+          id="precautions"
+          style="opacity: 0; transition: opacity 0.5s ease-in"
+        ></div>
+      </div>
     </div>
 
     <script>
@@ -178,6 +157,7 @@
       const resultDiv = document.getElementById("result");
       const fileInput = document.getElementById("imageInput");
       const fileNameDisplay = document.getElementById("file-name");
+      const precautionsDiv = document.getElementById("precautions");
 
       // Update file name display when a file is selected
       fileInput.addEventListener("change", function () {
@@ -188,41 +168,232 @@
       form.addEventListener("submit", async function (e) {
         e.preventDefault();
         const formData = new FormData(form);
-        const response = await fetch("/upload", {
-          method: "POST",
-          body: formData,
-        });
-        const data = await response.json();
+        try {
+          const response = await fetch("/upload", {
+            method: "POST",
+            body: formData,
+          });
+          const data = await response.json();
 
-        // Define prediction mapping
-        const predictionMap = {
-          0: "No DR",
-          1: "Mild DR",
-          2: "Moderate DR",
-          3: "Severe DR",
-          4: "Proliferative DR",
-        };
+          // Define prediction mapping
+          const predictionMap = {
+            0: "No DR",
+            1: "Mild DR",
+            2: "Moderate DR",
+            3: "Severe DR",
+            4: "Proliferative DR",
+          };
 
-        // Reset opacity and update content with fade-in
-        if (data.success) {
-          const predIndex = parseInt(data.prediction);
-          const predLabel = predictionMap.hasOwnProperty(predIndex)
-            ? predictionMap[predIndex]
-            : "Unknown";
+          // Define precautionary measures for each prediction
+          const precautionMap = {
+            0: `### **Precautionary Measures for No Diabetic Retinopathy**
+> *Your eyes show no signs of diabetic retinopathy at this time.*
 
+1. **Regular Eye Examinations**
+   - Schedule **dilated eye exams once a year** with your eye doctor.
+   - Early detection is key for preventing vision problems.
+
+2. **Maintain Good Blood Sugar Control**
+   - Keep your **HbA1c below 7%** (or target recommended by your physician).
+   - Monitor blood glucose levels regularly.
+
+3. **Healthy Lifestyle**
+   - Follow a **balanced diet** with plenty of fruits and vegetables.
+   - Exercise regularly (aim for 30 minutes most days of the week).
+   - Maintain a healthy weight.
+
+4. **Blood Pressure and Cholesterol Management**
+   - Keep blood pressure below 140/90 mmHg.
+   - Maintain healthy cholesterol levels.
+
+5. **Regular Medical Check-ups**
+   - Visit your primary care physician regularly.
+   - Take all prescribed medications as directed.
+
+> **Positive Outlook:**  
+With good diabetes management and regular eye checks, you can maintain your eye health and reduce your risk of developing diabetic retinopathy in the future.`,
+
+            1: `### **Precautionary Measures for Mild Diabetic Retinopathy**
+> *At this early stage, proactive management can significantly slow or halt progression.*
+
+1. **Routine Eye Examinations**
+   - Schedule **dilated eye exams every 6 to 12 months** with a retinal specialist.
+   - Monitor for subtle changes in retinal blood vessels or vision quality.
+
+2. **Strict Blood Sugar Control**
+   - Maintain **HbA1c below 7%** (or as advised by your physician).
+   - Monitor blood glucose levels regularly and adhere to medication schedules.
+
+3. **Manage Blood Pressure & Cholesterol**
+   - Keep **blood pressure below 140/90 mmHg**.
+   - Use statins or other lipid-lowering agents if recommended.
+
+4. **Healthy Lifestyle Adjustments**
+   - Adopt a **balanced diet** (low sugar, low sodium, rich in green vegetables).
+   - Engage in **regular physical activity** (at least 150 minutes per week).
+   - Avoid smoking and limit alcohol intake.
+
+5. **Medication Compliance**
+   - Take all prescribed **anti-diabetic, anti-hypertensive, and lipid-controlling medications** as directed.
+
+6. **Monitor Visual Changes**
+   - Report symptoms like **blurriness, floaters, or dark areas** in vision immediately.
+
+7. **Patient Education**
+   - Understand the **progressive nature of DR** and the importance of early intervention.
+   - Participate in **diabetes education programs** if available.
+
+> **Forward-looking Insight:**  
+By acting now, patients with Mild DR can delay or entirely prevent progression to more advanced, vision-threatening stages of diabetic retinopathy.`,
+
+            2: `### **Precautionary Measures for Moderate Diabetic Retinopathy**
+> *This stage requires more aggressive management to prevent vision loss.*
+
+1. **Frequent Eye Examinations**
+   - Schedule **dilated eye exams every 3 to 6 months** with a retinal specialist.
+   - More frequent monitoring may be necessary depending on progression.
+
+2. **Possible Medical Interventions**
+   - Discuss with your ophthalmologist about **potential treatments** like laser therapy.
+   - Early intervention can prevent progression to more severe stages.
+
+3. **Aggressive Blood Sugar Management**
+   - Work with your doctor to **optimize glucose control**.
+   - Target HbA1c levels as recommended by your healthcare team.
+   - Consider continuous glucose monitoring if available.
+
+4. **Strict Blood Pressure & Lipid Control**
+   - Maintain **blood pressure below 130/80 mmHg**.
+   - Follow a **low-sodium diet** if recommended.
+   - Take cholesterol medications as prescribed.
+
+5. **Lifestyle Modifications**
+   - Follow a **diabetic diet plan** developed with a nutritionist.
+   - Engage in **approved physical activities** that don't increase eye pressure.
+   - **Absolutely avoid smoking** and limit alcohol consumption.
+
+6. **Regular Communication with Healthcare Team**
+   - Report **any visual changes immediately**.
+   - Coordinate care between your endocrinologist and ophthalmologist.
+
+> **Important Note:**  
+Moderate diabetic retinopathy is a critical turning point. With proper medical care and lifestyle management, you can significantly reduce the risk of vision loss.`,
+
+            3: `### **Precautionary Measures for Severe Diabetic Retinopathy**
+> *Immediate and comprehensive intervention is essential at this advanced stage.*
+
+1. **Urgent Ophthalmological Care**
+   - **Immediate consultation** with a retinal specialist is required.
+   - Prepare for possible interventions like **laser photocoagulation** or **anti-VEGF injections**.
+   - Follow-up examinations every **1 to 3 months** or as directed.
+
+2. **Intensive Blood Sugar Control**
+   - Work with your endocrinologist for **aggressive diabetes management**.
+   - Consider adjustment of insulin regimen or medications.
+   - **Frequent blood glucose monitoring** throughout the day.
+
+3. **Critical Blood Pressure Management**
+   - Maintain **strict blood pressure control** below 130/80 mmHg.
+   - Daily blood pressure monitoring at home.
+   - Medication adherence is absolutely essential.
+
+4. **Activity Restrictions**
+   - **Avoid heavy lifting** and strenuous exercises that can increase eye pressure.
+   - Limit activities that involve rapid head movements.
+   - Get clearance from your doctor before resuming normal physical activities.
+
+5. **Symptom Vigilance**
+   - **Immediately report** any changes in vision, including:
+     - New floaters or flashes of light
+     - Blurred or fluctuating vision
+     - Areas of vision loss or shadows
+     - Sudden vision changes of any kind
+
+6. **Comprehensive Support**
+   - Consider joining a **support group** for emotional and practical assistance.
+   - Learn about **vision rehabilitation services** if needed.
+   - Prepare home environment for safety if vision is compromised.
+
+> **Critical Awareness:**  
+Severe diabetic retinopathy poses a significant risk to vision. Immediate and consistent medical care is absolutely essential to preserve remaining vision.`,
+
+            4: `### **Precautionary Measures for Proliferative Diabetic Retinopathy**
+> *This is the most advanced stage requiring urgent and aggressive intervention.*
+
+1. **Emergency Eye Care**
+   - **Immediate treatment** is required - do not delay seeking care.
+   - Prepare for interventions such as **vitrectomy**, **laser therapy**, or **anti-VEGF injections**.
+   - **Frequent follow-ups** (potentially weekly or monthly) will be necessary.
+
+2. **Hospital-Grade Blood Sugar Control**
+   - Work with specialists for **intensive glycemic management**.
+   - Your endocrinologist may recommend **hospitalization** for stabilization if control is poor.
+   - Continuous glucose monitoring may be essential.
+
+3. **Strict Medical Compliance**
+   - Take **all medications exactly as prescribed**.
+   - **Do not miss any appointments** with retinal specialists.
+   - Report any medication side effects immediately rather than discontinuing.
+
+4. **Visual Function Preservation**
+   - Learn about **low vision aids and services** that may help.
+   - Implement **home modifications** for safety if vision is compromised.
+   - Consider **occupational therapy** for adapting to visual changes.
+
+5. **Critical Symptoms Requiring Emergency Care**
+   - **Sudden vision loss** - seek emergency room care immediately.
+   - **Eye pain** - may indicate complications like neovascular glaucoma.
+   - **Flashes of light** or numerous new floaters - may indicate vitreous hemorrhage.
+
+6. **Mental Health Support**
+   - Address **anxiety and depression** that commonly occur with vision-threatening conditions.
+   - Consider **professional counseling** to cope with potential vision changes.
+
+> **Urgent Priority:**  
+Proliferative diabetic retinopathy is a medical emergency. With modern treatments, vision can often be preserved if intervention is immediate and comprehensive. Your adherence to medical recommendations directly impacts your visual outcome.`,
+          };
+
+          if (data.success) {
+            const predIndex = parseInt(data.prediction);
+            const predLabel = predictionMap.hasOwnProperty(predIndex)
+              ? predictionMap[predIndex]
+              : "Unknown";
+            const precautionText = precautionMap.hasOwnProperty(predIndex)
+              ? precautionMap[predIndex]
+              : "Please consult your doctor for further advice.";
+
+            // Update the result section (left block)
+            resultDiv.style.opacity = "0";
+            resultDiv.innerHTML = `
+              <p>${data.message}</p>
+              <p>Prediction: <span style="color: #bb86fc; font-weight: bold;">${predLabel}</span></p>
+              <img src="static/uploads/${data.filename}" alt="Uploaded image" style="max-width: 100%; height: auto; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);" />
+            `;
+
+            // Update the precaution section (right block) with markdown rendering
+            precautionsDiv.style.opacity = "0";
+            precautionsDiv.innerHTML = `<div class="markdown-content">${marked.parse(
+              precautionText
+            )}</div>`;
+
+            setTimeout(() => {
+              resultDiv.style.opacity = "1";
+              precautionsDiv.style.opacity = "1";
+            }, 10);
+          } else {
+            resultDiv.style.opacity = "0";
+            resultDiv.innerHTML = `<p style="color: #cf6679;">Error: ${data.error}</p>`;
+            precautionsDiv.style.opacity = "0";
+            precautionsDiv.innerHTML = "";
+            setTimeout(() => {
+              resultDiv.style.opacity = "1";
+            }, 10);
+          }
+        } catch (error) {
           resultDiv.style.opacity = "0";
-          resultDiv.innerHTML = `
-          <p>${data.message}</p>
-          <p>Prediction: <span class="prediction">${predLabel}</span></p>
-          <img src="static/uploads/${data.filename}" alt="Uploaded image" />
-        `;
-
-          setTimeout(() => {
-            resultDiv.style.opacity = "1";
-          }, 10);
-        } else {
-          resultDiv.style.opacity = "0";
-          resultDiv.innerHTML = `<p class="error">Error: ${data.error}</p>`;
+          resultDiv.innerHTML = `<p style="color: #cf6679;">Error: ${error.message}</p>`;
+          precautionsDiv.style.opacity = "0";
+          precautionsDiv.innerHTML = "";
           setTimeout(() => {
             resultDiv.style.opacity = "1";
           }, 10);
