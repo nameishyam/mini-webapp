@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Image Classification</title>
+    <!-- Import Roboto font from Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Base styles */
+      body {
+        font-family: "Roboto", sans-serif;
+        background-color: #121212;
+        color: #e0e0e0;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* Container for content */
+      .container {
+        max-width: 600px;
+        margin: 40px auto;
+        padding: 20px;
+        background-color: #1e1e1e;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+      }
+
+      /* Heading */
+      h1 {
+        text-align: center;
+        font-weight: 500;
+        margin-bottom: 20px;
+      }
+
+      /* Form layout */
+      form {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin: 20px 0;
+      }
+
+      /* Custom file input styling */
+      .file-input-wrapper {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+      }
+
+      input[type="file"] {
+        opacity: 0;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+      }
+
+      .file-label {
+        background-color: #bb86fc;
+        color: #121212;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        font-weight: 500;
+      }
+
+      .file-label:hover {
+        background-color: #d0b3ff; /* Lighter purple on hover */
+      }
+
+      #file-name {
+        margin-left: 10px;
+        color: #e0e0e0;
+        font-size: 0.9em;
+      }
+
+      /* Submit button styling */
+      input[type="submit"] {
+        background-color: #bb86fc;
+        color: #121212;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      input[type="submit"]:hover {
+        background-color: #d0b3ff; /* Lighter purple on hover */
+      }
+
+      /* Focus styles for accessibility */
+      input[type="file"]:focus + .file-label,
+      input[type="submit"]:focus {
+        outline: 2px solid #bb86fc;
+      }
+
+      /* Result section with fade-in effect */
+      #result {
+        opacity: 0;
+        transition: opacity 0.5s ease-in;
+      }
+
+      #result.show {
+        opacity: 1;
+      }
+
+      #result p {
+        margin: 10px 0;
+      }
+
+      #result img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      }
+
+      /* Highlight prediction and error */
+      .prediction {
+        color: #bb86fc;
+        font-weight: bold;
+      }
+
+      .error {
+        color: #cf6679;
+      }
+
+      /* Responsive design */
+      @media (max-width: 600px) {
+        form {
+          flex-direction: column;
+        }
+        .file-input-wrapper {
+          width: 100%;
+          justify-content: center;
+        }
+        #file-name {
+          margin-left: 0;
+          margin-top: 5px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Wrap content in a container -->
+    <div class="container">
+      <h1>Upload an Image for Classification</h1>
+      <form
+        id="uploadForm"
+        action="/upload"
+        method="post"
+        enctype="multipart/form-data"
+      >
+        <div class="file-input-wrapper">
+          <input
+            type="file"
+            id="imageInput"
+            name="image"
+            accept="image/*"
+            required
+          />
+          <label for="imageInput" class="file-label">Choose File</label>
+          <span id="file-name">No file chosen</span>
+        </div>
+        <input type="submit" value="Upload" />
+      </form>
+      <div id="result"></div>
+    </div>
+
+    <script>
+      const form = document.getElementById("uploadForm");
+      const resultDiv = document.getElementById("result");
+      const fileInput = document.getElementById("imageInput");
+      const fileNameDisplay = document.getElementById("file-name");
+
+      // Update file name display when a file is selected
+      fileInput.addEventListener("change", function () {
+        fileNameDisplay.textContent =
+          this.files.length > 0 ? this.files[0].name : "No file chosen";
+      });
+
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        const formData = new FormData(form);
+        const response = await fetch("/upload", {
+          method: "POST",
+          body: formData,
+        });
+        const data = await response.json();
+
+        // Define prediction mapping
+        const predictionMap = {
+          0: "No DR",
+          1: "Mild DR",
+          2: "Moderate DR",
+          3: "Severe DR",
+          4: "Proliferative DR",
+        };
+
+        // Reset opacity and update content with fade-in
+        if (data.success) {
+          const predIndex = parseInt(data.prediction);
+          const predLabel = predictionMap.hasOwnProperty(predIndex)
+            ? predictionMap[predIndex]
+            : "Unknown";
+
+          resultDiv.style.opacity = "0";
+          resultDiv.innerHTML = `
+          <p>${data.message}</p>
+          <p>Prediction: <span class="prediction">${predLabel}</span></p>
+          <img src="static/uploads/${data.filename}" alt="Uploaded image" />
+        `;
+
+          setTimeout(() => {
+            resultDiv.style.opacity = "1";
+          }, 10);
+        } else {
+          resultDiv.style.opacity = "0";
+          resultDiv.innerHTML = `<p class="error">Error: ${data.error}</p>`;
+          setTimeout(() => {
+            resultDiv.style.opacity = "1";
+          }, 10);
+        }
+      });
+    </script>
+  </body>
+</html>
