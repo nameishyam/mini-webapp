@@ -30,14 +30,14 @@
 
 ```
 
-├── static/ # CSS, JS, and image assets
-├── templates/ # Jinja2 HTML templates
-├── model/ # Pretrained model weights (e.g., drnet_model.pth)
-├── app.py # Flask application entry point
-├── requirements.txt # Dependency list
-├── README.md # Project documentation
-├── CONTRIBUTIONS.md # Contribution guidelines
-├── CODE_OF_CONDUCT.md # Community code of conduct
+├── static/
+├── templates/
+├── model/
+├── app.py
+├── requirements.txt
+├── README.md
+├── CONTRIBUTIONS.md
+├── CODE_OF_CONDUCT.md
 
 ```
 
@@ -50,8 +50,8 @@ Run **DR Analyzer** locally by following the steps below:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/<your-username>/dr-analyzer.git
-cd dr-analyzer
+git clone https://github.com/nameishyam/mini-webapp.git
+cd mini-webapp
 ```
 
 ### 2. Create a Virtual Environment
@@ -102,7 +102,7 @@ Upload retinal fundus images in `.jpg`, `.jpeg`, or `.png` format. The predictio
 
 We welcome and value contributions from the community. Whether it's improving the UI, enhancing the model, fixing bugs, or writing documentation—your support matters.
 
-- Review the [📘 CONTRIBUTIONS.md](CONTRIBUTIONS.md) for guidelines.
+- Review the [📘 CONTRIBUTIONS.md](CONTRIBUTING.md) for guidelines.
 - Please follow our [🤝 CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) to maintain a respectful and inclusive environment.
 
 ---
@@ -115,5 +115,5 @@ This project is licensed under the **MIT License**. See `LICENSE` for details.
 
 ## 📬 Contact
 
-- GitHub: [@<your-username>](https://github.com/<your-username>)
-- Email: your.email@example.com
+- GitHub: [@nameishyam](https://github.com/nameishyam)
+- Email: geddamgowtham4@gmail.com

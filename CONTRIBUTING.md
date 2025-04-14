@@ -27,8 +27,8 @@ Click on the **Fork** button on the GitHub page.
 ### 2. Clone Your Fork
 
 ```bash
-git clone https://github.com/<your-username>/dr-analyzer.git
-cd dr-analyzer
+git clone https://github.com/nameishyam/mini-webapp.git
+cd mini-webapp
 ```
 
 ### 3. Create a Feature Branch
