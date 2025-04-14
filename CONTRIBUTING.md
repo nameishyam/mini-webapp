@@ -1,3 +1,7 @@
+## ✅ `CONTRIBUTING`
+
+# 📘 CONTRIBUTING
+
 **DR Analyzer – Diabetic Retinopathy Classification Web App**
 
 We welcome all contributors who are passionate about AI in healthcare. Whether you're enhancing the model, refining the UI, or improving documentation—your contributions are valuable.
