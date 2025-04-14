@@ -1,5 +1,3 @@
-## ✅ `CONTRIBUTING`
-
 # 📘 CONTRIBUTING
 
 **DR Analyzer – Diabetic Retinopathy Classification Web App**
