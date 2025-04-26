@@ -21,9 +21,9 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Define your custom VGG16 architecture to match the saved model state_dict
-class CustomVGG16(nn.Module):
+class MyModel(nn.Module):
     def __init__(self):
-        super(CustomVGG16, self).__init__()
+        super(MyModel, self).__init__()
         self.features = vgg16(pretrained=True).features
         self.classifier = nn.Sequential(
             nn.Linear(25088, 4096),
@@ -44,7 +44,7 @@ class CustomVGG16(nn.Module):
 # Function to load the model using the appropriate device mapping
 def load_model():
     try:
-        model = CustomVGG16()
+        model = MyModel()
         model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
         model.to(device)
         model.eval()  # Set model to evaluation mode
