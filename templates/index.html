@@ -41,7 +41,7 @@
       padding: 0;
     "
   >
-    <!-- Main container with two blocks side by side -->
+    <!-- Main container with blocks stacked top to bottom -->
     <h1 style="text-align: center; justify-content: center">
       <img
         src="../static/assets/logo.png"
@@ -63,12 +63,10 @@
         background-color: #1e1e1e;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         border-radius: 10px;
-        display: flex;
-        flex-wrap: wrap;
       "
     >
-      <!-- Left Block: Upload form & Prediction Result -->
-      <div style="flex: 1; min-width: 300px; padding: 10px">
+      <!-- Top Block: Upload form -->
+      <div style="padding: 10px">
         <h1 style="text-align: center; font-weight: 500; margin-bottom: 20px">
           Upload an Image for Classification
         </h1>
@@ -141,28 +139,46 @@
             "
           />
         </form>
-        <div
-          id="result"
-          style="opacity: 0; transition: opacity 0.5s ease-in"
-        ></div>
-      </div>
 
-      <!-- Right Block: Precautionary Measures -->
-      <div
-        style="
-          flex: 1;
-          min-width: 300px;
-          padding: 10px;
-          border-left: 1px solid #333;
-        "
-      >
-        <h1 style="text-align: center; font-weight: 500; margin-bottom: 20px">
-          Precautionary Measures
-        </h1>
+        <!-- Middle Block: Image Results -->
         <div
-          id="precautions"
-          style="opacity: 0; transition: opacity 0.5s ease-in"
+          id="image-results"
+          style="
+            opacity: 0;
+            transition: opacity 0.5s ease-in;
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+          "
         ></div>
+        <!-- Bottom Block: Prediction Result -->
+        <div id="prediction-results" style="margin-top: 30px">
+          <div
+            id="result"
+            style="opacity: 0; transition: opacity 0.5s ease-in"
+          ></div>
+
+          <!-- Precautionary Measures Section - Initially Hidden -->
+          <div
+            id="precautionary-section"
+            style="
+              margin-top: 30px;
+              padding-top: 20px;
+              border-top: 1px solid #333;
+              display: none;
+            "
+          >
+            <h1
+              style="text-align: center; font-weight: 500; margin-bottom: 20px"
+            >
+              Precautionary Measures
+            </h1>
+            <div
+              id="precautions"
+              style="opacity: 0; transition: opacity 0.5s ease-in"
+            ></div>
+          </div>
+        </div>
       </div>
     </div>
     <div
@@ -188,6 +204,15 @@
       const fileInput = document.getElementById("imageInput");
       const fileNameDisplay = document.getElementById("file-name");
       const precautionsDiv = document.getElementById("precautions");
+      const imageResultsDiv = document.getElementById("image-results");
+      const predictionResultsDiv =
+        document.getElementById("prediction-results");
+      const precautionarySection = document.getElementById(
+        "precautionary-section"
+      );
+
+      // Make sure the precautionary section is initially hidden
+      precautionarySection.style.display = "none";
 
       // Update file name display when a file is selected
       fileInput.addEventListener("change", function () {
@@ -382,7 +407,6 @@ Severe diabetic retinopathy poses a significant risk to vision. Immediate and co
 > **Urgent Priority:**  
 Proliferative diabetic retinopathy is a medical emergency. With modern treatments, vision can often be preserved if intervention is immediate and comprehensive. Your adherence to medical recommendations directly impacts your visual outcome.`,
           };
-
           if (data.success) {
             const predIndex = parseInt(data.prediction);
             const predLabel = predictionMap.hasOwnProperty(predIndex)
@@ -390,36 +414,77 @@ Proliferative diabetic retinopathy is a medical emergency. With modern treatment
               : "Unknown";
             const precautionText = precautionMap.hasOwnProperty(predIndex)
               ? precautionMap[predIndex]
-              : "Please consult your doctor for further advice.";
+              : "Please consult your doctor for further advice."; // Get reference to the precautionary measures section
+            const precautionarySection = document.getElementById(
+              "precautionary-section"
+            );
 
-            // Update the result section (left block)
-            resultDiv.style.opacity = "0";
-            resultDiv.innerHTML = `
-              <p>${data.message}</p>
-              <p>Prediction: <span style="color: #bb86fc; font-weight: bold;">${predLabel}</span></p>
-              <img src="static/uploads/${data.filename}" alt="Uploaded image" style="max-width: 100%; height: auto; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);" />
+            // Update the image results section (top block)
+            imageResultsDiv.style.opacity = "0";
+            imageResultsDiv.innerHTML = `
+              <div style="flex: 1; margin-right: 10px; text-align: center;">
+                <h2 style="color: #bb86fc; margin-bottom: 15px;">Input Image</h2>
+                <img src="static/uploads/${data.low_res_filename}" alt="Low resolution image" style="max-width: 300px; height: 300px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);" />
+              </div>
+              <div style="flex: 1; margin-left: 10px; text-align: center;">
+                <h2 style="color: #bb86fc; margin-bottom: 15px;">Image after Processing</h2>
+                <img src="static/uploads/${data.high_res_filename}" alt="High resolution image" style="max-width: 300px; height: 300px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);" />
+              </div>
             `;
 
-            // Update the precaution section (right block) with markdown rendering
+            // Update the prediction result section (middle block)
+            resultDiv.style.opacity = "0";
+            resultDiv.innerHTML = `
+              <h2 style="text-align: center; color: #bb86fc; margin: 20px 0;">Analysis Results</h2>
+              <p>${data.message}</p>
+              <p>Prediction: <span style="color: #bb86fc; font-weight: bold; font-size: 1.2em;">${predLabel}</span></p>
+            `;
+
+            // Update the precaution section (bottom block) with markdown rendering
             precautionsDiv.style.opacity = "0";
             precautionsDiv.innerHTML = `<div class="markdown-content">${marked.parse(
               precautionText
             )}</div>`;
 
+            // Show the precautionary measures section
+            precautionarySection.style.display = "block";
+
             setTimeout(() => {
+              imageResultsDiv.style.opacity = "1";
               resultDiv.style.opacity = "1";
               precautionsDiv.style.opacity = "1";
             }, 10);
           } else {
+            // Get reference to the precautionary measures section
+            const precautionarySection = document.getElementById(
+              "precautionary-section"
+            );
+
+            // Hide the precautionary measures section on error
+            precautionarySection.style.display = "none";
+
+            imageResultsDiv.style.opacity = "0";
+            imageResultsDiv.innerHTML = "";
+
             resultDiv.style.opacity = "0";
             resultDiv.innerHTML = `<p style="color: #cf6679;">Error: ${data.error}</p>`;
+
             precautionsDiv.style.opacity = "0";
             precautionsDiv.innerHTML = "";
+
             setTimeout(() => {
               resultDiv.style.opacity = "1";
             }, 10);
           }
         } catch (error) {
+          // Get reference to the precautionary measures section
+          const precautionarySection = document.getElementById(
+            "precautionary-section"
+          );
+
+          // Hide the precautionary measures section on error
+          precautionarySection.style.display = "none";
+
           resultDiv.style.opacity = "0";
           resultDiv.innerHTML = `<p style="color: #cf6679;">Error: ${error.message}</p>`;
           precautionsDiv.style.opacity = "0";

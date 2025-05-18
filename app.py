@@ -6,6 +6,7 @@ from PIL import Image
 from werkzeug.utils import secure_filename
 import torch.nn as nn
 from torchvision.models import vgg16
+import uuid
 
 app = Flask(__name__)
 
@@ -81,13 +82,33 @@ def upload():
         return jsonify({'error': 'No selected file'}), 400
 
     if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
+        unique_id = str(uuid.uuid4())[:8]
+        original_filename = secure_filename(file.filename)
+        name_part, extension = os.path.splitext(original_filename)
+        filename = f"{name_part}_{unique_id}{extension}"
+        
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(filepath)
 
         try:
-            # Preprocess the image for model input
+            # Open the original image
             image = Image.open(filepath).convert('RGB')
+            
+            # Create low resolution version (128x128)
+            low_res_filename = f"{name_part}_{unique_id}_low{extension}"
+            low_res_path = os.path.join(app.config['UPLOAD_FOLDER'], low_res_filename)
+            low_res_image = image.copy()
+            low_res_image = low_res_image.resize((128, 128), Image.LANCZOS)
+            low_res_image.save(low_res_path)
+            
+            # Create high resolution version (512x512)
+            high_res_filename = f"{name_part}_{unique_id}_high{extension}"
+            high_res_path = os.path.join(app.config['UPLOAD_FOLDER'], high_res_filename)
+            high_res_image = image.copy()
+            high_res_image = high_res_image.resize((512, 512), Image.LANCZOS)
+            high_res_image.save(high_res_path)
+
+            # Preprocess the image for model input
             input_tensor = transform(image).unsqueeze(0).to(device)
 
             # Run prediction
@@ -102,6 +123,8 @@ def upload():
             return jsonify({
                 'success': True,
                 'filename': filename,
+                'low_res_filename': low_res_filename,
+                'high_res_filename': high_res_filename,
                 'prediction': prediction,
                 'message': f'File {filename} uploaded and classified successfully'
             })
