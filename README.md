@@ -19,6 +19,58 @@
 ## 🧠 Model Overview
 
 - Based on a custom **DRNet architecture**, optimized for retinal image analysis.
+
+---
+
+## 🐳 Docker Deployment
+
+### Prerequisites
+
+- Docker installed on your system
+- Docker Compose installed on your system
+
+### Building and Running with Docker
+
+1. **Build and start the container:**
+
+   ```bash
+   docker-compose up -d
+   ```
+
+2. **Access the application:**
+   Open your browser and go to:
+
+   ```
+   http://localhost:5000
+   ```
+
+3. **Stop the container:**
+   ```bash
+   docker-compose down
+   ```
+
+### Building without Docker Compose
+
+If you prefer not to use Docker Compose:
+
+1. **Build the Docker image:**
+
+   ```bash
+   docker build -t dr-analyzer .
+   ```
+
+2. **Run the container:**
+
+   ```bash
+   docker run -d -p 5000:5000 --name dr-analyzer dr-analyzer
+   ```
+
+3. **Stop and remove the container:**
+   ```bash
+   docker stop dr-analyzer
+   docker rm dr-analyzer
+   ```
+
 - Trained on large-scale datasets like **APTOS** and **EyePACS**.
 - Includes preprocessing (grayscale normalization, contrast enhancement, resizing).
 - Utilizes multi-scale features and attention mechanisms.

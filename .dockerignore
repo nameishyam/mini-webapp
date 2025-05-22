@@ -1,0 +1,25 @@
+# Exclude virtual environment
+myenv/
+
+# Exclude development files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.env
+.venv
+*.log
+
+# Exclude git files
+.git
+.gitignore
+
+# Exclude Docker files (not needed in build context)
+.dockerignore
+Dockerfile
+
+# Exclude any existing uploaded images to keep the image smaller
+static/uploads/*
+
+# Don't exclude model.pth as it's required for the application
