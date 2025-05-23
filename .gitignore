@@ -2,3 +2,5 @@ images/
 myenv/
 static/uploads/
 main.ipynb
+.vscode
+.github
