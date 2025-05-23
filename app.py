@@ -7,13 +7,23 @@ from werkzeug.utils import secure_filename
 import torch.nn as nn
 from torchvision.models import vgg16
 import uuid
+import logging
+from s3_utils import download_model_from_s3
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
 # Configuration
 UPLOAD_FOLDER = './static/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
-MODEL_PATH = './models/model.pth'  # Ensure this path matches where your model is stored
+MODEL_PATH = './models/model.pth'  # Local path to save the model
+
+# S3 Configuration
+S3_BUCKET = os.getenv('S3_BUCKET', 'your-s3-bucket-name')
+S3_MODEL_KEY = os.getenv('S3_MODEL_KEY', 'models/model.pth')  # S3 key where model is stored
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -45,10 +55,19 @@ class MyModel(nn.Module):
 # Function to load the model using the appropriate device mapping
 def load_model():
     try:
+        # Ensure model is downloaded from S3
+        if not os.path.exists(MODEL_PATH):
+            logger.info("Model not found locally. Downloading from S3...")
+            success = download_model_from_s3(S3_BUCKET, S3_MODEL_KEY, MODEL_PATH)
+            if not success:
+                raise Exception("Failed to download model from S3")
+        
         model = MyModel()
+        logger.info(f"Loading model from {MODEL_PATH}")
         model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
         model.to(device)
         model.eval()  # Set model to evaluation mode
+        logger.info("Model loaded successfully")
         return model
     except Exception as e:
         print(f"Error loading model: {e}")
@@ -134,4 +153,6 @@ def upload():
     return jsonify({'error': 'File type not allowed'}), 400
 
 if __name__ == '__main__':
-    app.run(host = '0.0.0.0', port = 5000)
+    # Create models directory if it doesn't exist
+    os.makedirs(os.path.dirname(MODEL_PATH), exist_ok=True)
+    app.run(host='0.0.0.0', port=5000)
