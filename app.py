@@ -22,7 +22,8 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 MODEL_PATH = './models/model.pth'  # Local path to save the model
 
 # S3 Configuration
-S3_BUCKET = os.getenv('S3_BUCKET', 'your-s3-bucket-name')
+# For Netlify, we'll use AWS credentials from the environment
+S3_BUCKET = os.getenv('S3_BUCKET', 'mypthmodel')
 S3_MODEL_KEY = os.getenv('S3_MODEL_KEY', 'models/model.pth')  # S3 key where model is stored
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER

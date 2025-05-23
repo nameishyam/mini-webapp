@@ -1,6 +1,11 @@
 import os
 import argparse
+import logging
 from s3_utils import upload_model_to_s3
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def main():
     parser = argparse.ArgumentParser(description='Upload model to S3')
@@ -11,13 +16,15 @@ def main():
     
     args = parser.parse_args()
     
-    print(f"Uploading {args.local_path} to s3://{args.bucket}/{args.s3_key}")
-    success = upload_model_to_s3(args.local_path, args.bucket, args.s3_key)
-    
-    if success:
-        print("Upload successful!")
-    else:
-        print("Upload failed.")
+    logger.info(f"Uploading {args.local_path} to s3://{args.bucket}/{args.s3_key}")
+    try:
+        success = upload_model_to_s3(args.local_path, args.bucket, args.s3_key)
+        if success:
+            logger.info("Upload successful!")
+        else:
+            logger.error("Upload failed.")
+    except Exception as e:
+        logger.error(f"Error during upload: {str(e)}")
 
 if __name__ == "__main__":
     main()

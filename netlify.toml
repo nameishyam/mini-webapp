@@ -1,13 +1,22 @@
 [build]
-command = "pip install -r requirements.txt"
-base = "/"
-publish = "/"
+  command = "pip install -r requirements.txt"
+  publish = "/"
 
 [build.environment]
-PYTHONPATH = "."
+  PYTHON_VERSION = "3.9"
+  PYTHONPATH = "."
+
+# Required for Python on Netlify
+[[plugins]]
+  package = "@netlify/plugin-python"
 
 # Exclude the model file from the build
 [[redirects]]
   from = "/models/*"
   to = "/404.html"
   status = 404
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
